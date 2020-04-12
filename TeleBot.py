@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import telegram
-from Covid import Statistics
+from main import Statistics
 from emoji import emojize, demojize
 from telegram.ext import MessageHandler, Filters, Updater, CommandHandler
 
@@ -199,7 +199,6 @@ dispatcher.add_handler(Start)
 def get_country(msg):
     flag_uni = msg.encode('unicode-escape').decode('utf-8')
     for flag in flags:
-        print(flag['name'])
         x = flag['uni'].encode('unicode-escape').decode('utf-8')
         if x == flag_uni:
             return flag['name']
@@ -207,14 +206,22 @@ def get_country(msg):
             continue
         return None
 
+def get_message(stats):
+    cases = emojize(f":red_circle: Total Cases : {stats['total_cases']}", use_aliases = True)
+    deaths = emojize(f":black_circle: Deaths : {stats['total_deaths']}", use_aliases = True)
+    recovered = emojize(f":white_circle: Recovered : {stats['recovered']}", use_aliases = True)
+    serious = emojize(f":warning: Serious : {stats['total_serious']}", use_aliases = True)
+    active = emojize(f":sparkle: Active : {stats['total_active_cases']}", use_aliases = True)
+    message = '\n'.join([cases, deaths, recovered, serious, active])
+    return message
+
 def country(update, context):
     msg = update.message.text
     country = get_country(msg)
     if not country:
         context.bot.send_message(chat_id=update.effective_chat.id, text='Error')
     stats = cls.by_country(country)
-    print(stats)
-    message = emojize(f":red_circle: Cases : {stats['total_cases']}\n:black_circle: Deaths : {stats['total_deaths']}\n:white_circle: Recoveries : {stats['recovered']}\n:warning: Critical : {stats['total_serious_cases']}\n:sparkle: Active : {stats['total_active_cases']}", use_aliases = True)
+    message = get_message(stats)
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 send = MessageHandler(Filters.text, country)
