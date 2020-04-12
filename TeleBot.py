@@ -5,7 +5,7 @@ from main import Statistics
 from emoji import emojize, demojize
 from telegram.ext import MessageHandler, Filters, Updater, CommandHandler
 
-updater = Updater(token='1220830296:AAFpxTw3yYE_URG0OZxeQFp7BgjXKWomKDc', use_context=True)
+updater = Updater(token='token', use_context=True) # Don't use old token, its revoked :)
 dispatcher = updater.dispatcher
 cls = Statistics()
 
