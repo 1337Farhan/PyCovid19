@@ -1,0 +1,1 @@
+worker: TeleBot.py
