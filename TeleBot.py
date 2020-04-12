@@ -5,7 +5,7 @@ from main import Statistics
 from emoji import emojize, demojize
 from telegram.ext import MessageHandler, Filters, Updater, CommandHandler
 
-updater = Updater(token='1220830296:AAFpxTw3yYE_URG0OZxeQFp7BgjXKWomKDc', use_context=True)
+updater = Updater(token='1220830296:AAEumiJm8Ft_fYWoRzVp2xWWxXazxwU0Zpw', use_context=True) # Don't use old token, its revoked :)
 dispatcher = updater.dispatcher
 cls = Statistics()
 
@@ -210,8 +210,9 @@ def get_message(stats):
     cases = emojize(f":red_circle: Total Cases : {stats['total_cases']}", use_aliases = True)
     deaths = emojize(f":black_circle: Deaths : {stats['total_deaths']}", use_aliases = True)
     recovered = emojize(f":white_circle: Recovered : {stats['recovered']}", use_aliases = True)
-    serious = emojize(f":warning: Serious : {stats['total_serious']}", use_aliases = True)
-    active = emojize(f":sparkle: Active : {stats['total_active_cases']}", use_aliases = True)
+=======
+    serious = emojize(f":yellow_circle: Serious : {stats['total_serious']}", use_aliases = True)
+    active = emojize(f":green_circle: Active : {stats['total_active_cases']}", use_aliases = True)
     message = '\n'.join([cases, deaths, recovered, serious, active])
     return message
 
@@ -219,7 +220,7 @@ def country(update, context):
     msg = update.message.text
     country = get_country(msg)
     if not country:
-        context.bot.send_message(chat_id=update.effective_chat.id, text='Error')
+        context.bot.send_message(chat_id=update.effective_chat.id, text='Country not found, Contact creators on instagram to add your country.')
     stats = cls.by_country(country)
     message = get_message(stats)
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
