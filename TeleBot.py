@@ -189,17 +189,24 @@ flags = [{'name': 'AF', 'uni': '\U0001f1e6\U0001f1eb'},
           {'name': 'ZW', 'uni': '\U0001f1ff\U0001f1fc'}]
 
 def start(update, context):
-    Start_msg_ar = "البوت *COVID-19 BOT* هو بوت تم انشاء من قبل FAR7AN & Moha369، ارسل علم دولتك لكي تحصل على الاحصائيات في دولتك او ارسل كلمة all لكي تحصل على الاحصائيات عالمياً"
-    Start_msg_help_ar ="أرسل /help للحصول على المساعدة "
-    Start_msg_help = "\n /help to display this message again. " + Start_msg_help_ar
-    Start_msg = "*COVID-19 BOT* is a bot created By FAR7AN & Moha369, Send your country flag to get the latest statistics about the disease in your country or send \"all\" to get worldwide information.\n\n" + Start_msg_ar
-    context.bot.send_message(chat_id=update.effective_chat.id, text=Start_msg, parse_mode = telegram.ParseMode.MARKDOWN_V2)
+    try:
+        start_msg_ar = "البوت *COVID\-19 BOT* هو بوت تم انشاء من قبل FAR7AN & Moha369، ارسل علم دولتك لكي تحصل على الاحصائيات في دولتك او ارسل كلمة all لكي تحصل على الاحصائيات عالمياً"
+        start_msg_help_ar ="أرسل /help للحصول على المساعدة"
+        start_msg_help = "/nsend /help _or just click it_ to get help\."
+        start_msg = "*COVID\-19 BOT* is a bot created By FAR7AN & Moha369, Send your country flag to get the latest statistics about the disease in your country or send \"all\" to get worldwide information\.\n\n"
+        context.bot.send_message(chat_id=update.effective_chat.id, text = '\n'.join([start_msg_ar, start_msg_help_ar, start_msg_help, start_msg]), parse_mode = telegram.ParseMode.MARKDOWN_V2)
+    except Exception as e:
+        print(e)
 # definition of send moved to the end
 
-def help(update, context):
-    Help_msg_ar = "تواصل مع @Moha369 او @FR74N للحصول على المسساعدة"
-    Help_msg = "Contact @Moha369 or @FR74N for support." + start_msg_ar
-    context.bot.send_message(chat_id=update.effective_chat.id, text=Help_msg, parse_mode = telegram.ParseMode.MARKDOWN_V2)
+def _help(update, context):
+    try:
+        Help_msg_ar = "تواصل مع @Moha369 او @FR74N للحصول على المسساعدة\n"
+        Help_msg = "Contact @Moha369 or @FR74N for support\."
+        print('done')
+        context.bot.send_message(chat_id=update.effective_chat.id, text= '\n'.join([Help_msg, Help_msg_ar]), parse_mode = telegram.ParseMode.MARKDOWN_V2)
+    except Exception as e:
+        print(e)
 # definition of help moved to the end
 
 def get_country(msg):
@@ -243,12 +250,12 @@ def country(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 # Here
-Start = CommandHandler('start', start)
-dispatcher.add_handler(Start)
+start_handler = CommandHandler('start', start)
+dispatcher.add_handler(start_handler)
 
 # Here
-Help = CommandHandler('Help', help)
-dispatcher.add_handler(Help)
+help_handler = CommandHandler('help', _help)
+dispatcher.add_handler(help_handler)
 
 send = MessageHandler(Filters.text, country)
 dispatcher.add_handler(send)
