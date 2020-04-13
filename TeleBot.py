@@ -5,7 +5,7 @@ from main import Statistics
 from emoji import emojize, demojize
 from telegram.ext import MessageHandler, Filters, Updater, CommandHandler
 
-updater = Updater(token='1220830296:AAEumiJm8Ft_fYWoRzVp2xWWxXazxwU0Zpw', use_context=True) # Don't use old token, its revoked :)
+updater = Updater(token='1220830296:AAEumiJm8Ft_fYWoRzVp2xWWxXazxwUOZpw', use_context=True) # Don't use old token, its revoked :)
 dispatcher = updater.dispatcher
 cls = Statistics()
 
@@ -189,12 +189,18 @@ flags = [{'name': 'AF', 'uni': '\U0001f1e6\U0001f1eb'},
           {'name': 'ZW', 'uni': '\U0001f1ff\U0001f1fc'}]
 
 def start(update, context):
-    start_msg_ar = "للبدء ارسل علم دولتك وسوف أرد عليك بأحدث المعلومات عن فيروس كورونا."
-    Start_msg = "Covid19 bot created By FAR7AN & Moha369, Send your country flag to get the latest information about Corona virus in your country. \n" + start_msg_ar
-    context.bot.send_message(chat_id=update.effective_chat.id, text=Start_msg)
+    Start_msg_ar = "البوت *COVID-19 BOT* هو بوت تم انشاء من قبل FAR7AN & Moha369، ارسل علم دولتك لكي تحصل على الاحصائيات في دولتك او ارسل كلمة all لكي تحصل على الاحصائيات عالمياً"
+    Start_msg_help_ar ="أرسل /help للحصول على المساعدة "
+    Start_msg_help = "\n /help to display this message again. " + Start_msg_help_ar
+    Start_msg = "*COVID-19 BOT* is a bot created By FAR7AN & Moha369, Send your country flag to get the latest statistics about the disease in your country or send \"all\" to get worldwide information.\n\n" + Start_msg_ar
+    context.bot.send_message(chat_id=update.effective_chat.id, text=Start_msg, parse_mode = telegram.ParseMode.MARKDOWN_V2)
+# definition of send moved to the end
 
-Start = CommandHandler('start', start)
-dispatcher.add_handler(Start)
+def help(update, context):
+    Help_msg_ar = "تواصل مع @Moha369 او @FR74N للحصول على المسساعدة"
+    Help_msg = "Contact @Moha369 or @FR74N for support." + start_msg_ar
+    context.bot.send_message(chat_id=update.effective_chat.id, text=Help_msg, parse_mode = telegram.ParseMode.MARKDOWN_V2)
+# definition of help moved to the end
 
 def get_country(msg):
     flag_uni = msg.encode('unicode-escape').decode('utf-8')
@@ -210,20 +216,39 @@ def get_message(stats):
     cases = emojize(f":red_circle: Total Cases : {stats['total_cases']}", use_aliases = True)
     deaths = emojize(f":black_circle: Deaths : {stats['total_deaths']}", use_aliases = True)
     recovered = emojize(f":white_circle: Recovered : {stats['recovered']}", use_aliases = True)
-=======
     serious = emojize(f":yellow_circle: Serious : {stats['total_serious']}", use_aliases = True)
     active = emojize(f":green_circle: Active : {stats['total_active_cases']}", use_aliases = True)
-    message = '\n'.join([cases, deaths, recovered, serious, active])
+    patreon = '\nSupport us using patreon : https://www.patreon.com/join/DevArabia/checkout'
+    ranking = emojize(f":chart_increasing: Global Ranking : {stats['global_rank']}", use_aliases = True)
+    message = '\n'.join([cases, deaths, recovered, serious, active, ranking, patreon])
     return message
 
 def country(update, context):
     msg = update.message.text
-    country = get_country(msg)
-    if not country:
-        context.bot.send_message(chat_id=update.effective_chat.id, text='Country not found, Contact creators on instagram to add your country.')
-    stats = cls.by_country(country)
-    message = get_message(stats)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    if msg.lower() == 'all':
+        cases = emojize(f":red_circle: Total Cases : {cls.total_cases}", use_aliases = True)
+        deaths = emojize(f":black_circle: Deaths : {cls.total_deaths}", use_aliases = True)
+        recovered = emojize(f":white_circle: Recovered : {cls.total_recoveries}", use_aliases = True)
+        serious = emojize(f":yellow_circle: Serious : {cls.total_serious}", use_aliases = True)
+        active = emojize(f":green_circle: Active : {cls.total_active}", use_aliases = True)
+        patreon = '\nSupport us using patreon : https://www.patreon.com/join/DevArabia/checkout'
+        message = '\n'.join([cases, deaths, recovered, serious, active, patreon])
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    else:
+        country = get_country(msg)
+        if not country:
+            context.bot.send_message(chat_id=update.effective_chat.id, text='Country not found, Contact creators on instagram to add your country.')
+        stats = cls.by_country(country)
+        message = get_message(stats)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+# Here
+Start = CommandHandler('start', start)
+dispatcher.add_handler(Start)
+
+# Here
+Help = CommandHandler('Help', help)
+dispatcher.add_handler(Help)
 
 send = MessageHandler(Filters.text, country)
 dispatcher.add_handler(send)
